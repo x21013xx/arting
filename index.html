@@ -68,10 +68,7 @@
         </div>
 
         <div class="send">
-        <!-- このLIFFをブラウザーで使用し、デバイスへダウンロードする場合
-          このHTMLと下のJSのコメントアウトを外してください。
           <button id="download">download</button>
-        -->
           <button class="button" onclick="uploadAndSendToLINE()">Send to LINE</button>
         </div>
 
@@ -81,7 +78,7 @@
 
         function initializeLIFF() {
           liff.init({
-              liffId: 'YOUR_LIFF_ID' // あなたのLIFFアプリのIDに置き換えてください
+              liffId: '2005613783-mB296jPd' // あなたのLIFFアプリのIDに置き換えてください
           })
           .then(() => {
               console.log("LIFF initialization successful");
@@ -189,11 +186,7 @@
             setBgColor();
           });
 
-      /*
-      　このLIFFをブラウザーで使用し、デバイスへダウンロードする場合
-      　このJSと上のHTMLのコメントアウトを外してください。
-
-          // canvasを画像で保存
+        // canvasを画像で保存
           document.getElementById("download").onclick = (event) => {
             let canvas = document.getElementById("canvas");
 
@@ -202,7 +195,7 @@
             link.download = "canvas.png";
             link.click();
           }
-      */
+
           function setBgColor() {
             ctx.fillStyle = bgColor;
             ctx.fillRect(0, 0, cnvWidth, cnvHeight);
@@ -222,7 +215,7 @@
 
               // 画像をImgBBにアップロード
               // YOUR_IMGBB_API_KEY をあなたのImgBB APIに置き換えてください
-              fetch('https://api.imgbb.com/1/upload?key=YOUR_IMGBB_API_KEY', {
+              fetch('https://api.imgbb.com/1/upload?key=6d5262ce3c660282adbde104fc74c228', {
                   method: 'POST',
                   body: new URLSearchParams({ image: base64Image }),
                   headers: {

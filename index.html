@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <link rel="stylesheet" href="style.css" />
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/all.css" integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr" crossorigin="anonymous">
+    <title>お絵描き</title>
+      <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+  </head>
+
+  <body>
+        <div class="title">
+          <p>おえかきボード</p>
+        </div>
+
+        <div id="board">
+          <canvas id="canvas" width="300px" height="300px"></canvas>
+        </div>
+
+        <div class="option">
+          <div class="color">
+
+            <a href="#" class="black" data-color="0, 0, 0, 1">
+              <i class="fas fa-paint-brush fa-3x"></i>
+            </a>
+            <a href="#" class="red" data-color="255, 0, 0, 1">
+              <i class="fas fa-paint-brush fa-3x"></i>
+            </a>
+            <a href="#" class="blue" data-color="0, 0, 255, 1">
+              <i class="fas fa-paint-brush fa-3x"></i>
+            </a>
+            <a href="#" class="yellow" data-color="255, 255, 0, 1">
+              <i class="fas fa-paint-brush fa-3x"></i>
+            </a>
+            <a href="#" class="green" data-color="0, 128, 0, 1">
+              <i class="fas fa-paint-brush fa-3x"></i>
+            </a>
+            <a href="#" class="white" data-color="255, 255, 255, 1">
+              <i class="fas fa-paint-brush fa-3x"></i>
+            </a>
+            <a href="#" id="eraser" class="eraser">
+              <i class="fas fa-eraser fa-3x"></i>
+            </a>
+            <a href="#" id="clear" class="clear">
+              <i class="fas fa-undo-alt fa-3x"></i>
+            </a>
+            <div id="bold" class="bold">
+              <a href="#" id="small" class="small" data-bold="1">ほそい</a>
+              <a href="#" id="middle" class="middle" data-bold="5">ふつう</a>
+              <a href="#" id="large" class="large" data-bold="10">ふとい</a>
+            </div>
+          </div>
+        </div>
+
+        <div class="setting">
+          <div class="bgColor">背景色：
+            <input type="color" id="bgColorPicker" value="#ffffff">
+            <button id="clearBgColor" class="clearBgColor">背景色無し</button>
+          </div>
+          <div>
+            <!-- ファイル選択ボタン -->
+            <button id="file" class="file">写真を読み込む</button>
+            <input type="file" id="fileinput" class="fileinput" accept="image/*" onchange="handleFileSelect(this)" />
+          </div>
+        </div>
+
+        <div class="send">
+        <!-- このLIFFをブラウザーで使用し、デバイスへダウンロードする場合
+          このHTMLと下のJSのコメントアウトを外してください。
+          <button id="download">download</button>
+        -->
+          <button class="button" onclick="uploadAndSendToLINE()">Send to LINE</button>
+        </div>
+
+
+      <script>
+        window.onload = initializeLIFF;
+
+        function initializeLIFF() {
+          liff.init({
+              liffId: 'YOUR_LIFF_ID' // あなたのLIFFアプリのIDに置き換えてください
+          })
+          .then(() => {
+              console.log("LIFF initialization successful");
+          })
+          .catch((err) => {
+              console.error("LIFF initialization failed", err);
+          });
+        }
+
+          // canvas
+          var canvas = document.getElementById('canvas');
+          var ctx = canvas.getContext('2d');
+      
+          // 変数宣言
+          const cnvWidth = 500;
+          const cnvHeight = 500;
+          var cnvColor = "0, 0, 0, 1";  // 線の色
+          var cnvBold = 5;  // 線の太さ
+          var drawing = false; // 描画中フラグ
+          var bgColor = "#ffffff"; //開いた時の最初の背景色（白）
+      
+          // canvasの背景色を設定(指定がない場合にjpeg保存すると背景が黒になる)
+          setBgColor();
+      
+          // canvas上でのイベント
+          canvas.addEventListener('mousedown', startDrawing);
+          canvas.addEventListener('mouseup', stopDrawing);
+          canvas.addEventListener('mousemove', draw);
+          canvas.addEventListener('touchstart', startDrawing);
+          canvas.addEventListener('touchend', stopDrawing);
+          canvas.addEventListener('touchmove', draw);
+      
+          // 描画処理
+          function draw(e) {
+            if (!drawing) return;
+            var x, y;
+            if (e.type.startsWith('touch')) {
+              x = e.touches[0].clientX - canvas.offsetLeft;
+              y = e.touches[0].clientY - canvas.offsetTop;
+            } else {
+              x = e.offsetX;
+              y = e.offsetY;
+            }
+            ctx.lineWidth = cnvBold;
+            ctx.strokeStyle = 'rgba(' + cnvColor + ')';
+            ctx.lineTo(x, y);
+            ctx.stroke();
+          }
+      
+          // 描画開始
+          function startDrawing(e) {
+            drawing = true;
+            var x, y;
+            if (e.type.startsWith('touch')) {
+              x = e.touches[0].clientX - canvas.offsetLeft;
+              y = e.touches[0].clientY - canvas.offsetTop;
+            } else {
+              x = e.offsetX;
+              y = e.offsetY;
+            }
+            ctx.beginPath();
+            ctx.lineCap = "round";
+            ctx.moveTo(x, y);
+          }
+      
+          // 描画終了
+          function stopDrawing() {
+            drawing = false;
+          }
+      
+          // 色の変更
+          $(".color a").click(function () {
+            cnvColor = $(this).data("color");
+            ctx.globalCompositeOperation = 'source-over';
+            return false;
+          });
+      
+          // 線の太さ変更
+          $(".bold a").click(function () {
+            cnvBold = $(this).data("bold");
+            return false;
+          });
+
+          // 消しゴム
+          $("#eraser").click(function () {
+            ctx.globalCompositeOperation = 'destination-out';
+          });
+
+          // 描画クリア
+          $("#clear").click(function () {
+            ctx.clearRect(0, 0, cnvWidth, cnvHeight);
+            setBgColor();
+          });
+
+          // 背景色の変更
+          $("#bgColorPicker").change(function() {
+            ctx.globalCompositeOperation = 'source-over';
+            bgColor = $(this).val();
+            setBgColor();
+          });
+
+          // 背景色を無しにする
+          $("#clearBgColor").click(function() {
+            ctx.globalCompositeOperation = 'destination-out';
+            setBgColor();
+          });
+
+      /*
+      　このLIFFをブラウザーで使用し、デバイスへダウンロードする場合
+      　このJSと上のHTMLのコメントアウトを外してください。
+
+          // canvasを画像で保存
+          document.getElementById("download").onclick = (event) => {
+            let canvas = document.getElementById("canvas");
+
+            let link = document.createElement("a");
+            link.href = canvas.toDataURL("image/png");
+            link.download = "canvas.png";
+            link.click();
+          }
+      */
+          function setBgColor() {
+            ctx.fillStyle = bgColor;
+            ctx.fillRect(0, 0, cnvWidth, cnvHeight);
+          }
+
+          function uploadAndSendToLINE() {
+              // LIFFが初期化されているか確認
+              if (!liff.isInClient()) {
+                  alert('This app must be viewed in the LINE app.');
+                  return;
+              }
+
+              // Canvasから画像データを取得
+              var imageDataURL = canvas.toDataURL();
+              // 画像データをBase64に変換
+              var base64Image = imageDataURL.replace(/^data:image\/(png|jpg);base64,/, '');
+
+              // 画像をImgBBにアップロード
+              // YOUR_IMGBB_API_KEY をあなたのImgBB APIに置き換えてください
+              fetch('https://api.imgbb.com/1/upload?key=YOUR_IMGBB_API_KEY', {
+                  method: 'POST',
+                  body: new URLSearchParams({ image: base64Image }),
+                  headers: {
+                      'Content-Type': 'application/x-www-form-urlencoded'
+                  }
+              })
+              .then(response => response.json())
+              .then(data => {
+                  // アップロード成功時にLINEに送信
+                  sendImageMessage(data.data.url);
+              })
+              .catch(error => {
+                  console.error('Error uploading image', error);
+              });
+          }
+
+          function sendImageMessage(imageUrl) {
+              // 画像のURLをLINEに送信
+              liff.sendMessages([
+                  {
+                      type: 'image',
+                      originalContentUrl: imageUrl,
+                      previewImageUrl: imageUrl
+                  }
+              ])
+              .then(() => {
+                liff.closeWindow();
+              })
+              .catch((err) => {
+                  console.error('Error sending image', err);
+              });
+          }
+
+        //id="file"のボタンを押したときに、
+        //input type="file" id="fileinput" をクリックしたことと
+        //同じ動作にする設定
+        //input type="file" id="fileinput"は、CSSで表示させないように設定
+        document.querySelector("#file").addEventListener("click", () => {
+          document.querySelector("#fileinput").click();
+        });
+
+        //デバイス（スマホやPC)から写真をcanvasに読み込む
+        //写真を、縦横比を維持し、
+        //縦長の写真ならば高さを300px、横長の写真ならば幅を300px、
+        //正方形ならば高さ300px、幅300pxの大きさに変えて、canvasに読み込ませる
+        // ファイル選択時の処理
+        function handleFileSelect(input) {
+          const file = input.files[0];
+          if (file) {
+            const reader = new FileReader();
+
+            reader.onload = function (e) {
+              const image = new Image();
+              image.src = e.target.result;
+
+              image.onload = function () {
+                // 新しいCanvasを作成し、指定したサイズに変更
+                const canvas = document.createElement('canvas');
+                const ctx = canvas.getContext('2d');
+                
+                if (image.width > image.height) {
+                  // 横長の場合
+                  canvas.width = 300;
+                  canvas.height = (300 / image.width) * image.height;
+                } else if (image.width < image.height) {
+                  // 縦長の場合
+                  canvas.width = (300 / image.height) * image.width;
+                  canvas.height = 300;
+                } else {
+                  // 正方形の場合
+                  canvas.width = 300;
+                  canvas.height = 300;
+                }
+
+                // 画像を新しいCanvasに描画
+                ctx.drawImage(image, 0, 0, canvas.width, canvas.height);
+
+                // 元のCanvasを取得し、新しいCanvasの内容を元のCanvasに描画
+                const originalCanvas = document.getElementById('canvas');
+                const originalCtx = originalCanvas.getContext('2d');
+                originalCanvas.width = canvas.width;
+                originalCanvas.height = canvas.height;
+                originalCtx.drawImage(canvas, 0, 0);
+
+                // 新しいCanvasは不要なので削除
+                document.body.removeChild(canvas);
+              };
+            };
+
+          reader.readAsDataURL(file);
+        }
+      }
+      </script>
+  </body>
+</html>
+

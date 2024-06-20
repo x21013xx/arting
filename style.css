@@ -65,6 +65,7 @@ transition: .4s;
 .black i {
 vertical-align: middle;
 color: #000000;
+background: #79ff89;
 top: 9px;
 border-radius: 50%;
 font-size: 36px;
@@ -92,6 +93,7 @@ transition: .4s;
 .red i {
 vertical-align: middle;
 color: #ff0000;
+background: #79ff89;
 top: 9px;
 border-radius: 50%;
 font-size: 36px;
@@ -119,6 +121,7 @@ transition: .4s;
 .blue i {
 vertical-align: middle;
 color: #0000ff;
+background: #79ff89;
 top: 9px;
 border-radius: 50%;
 font-size: 36px;
@@ -146,6 +149,7 @@ transition: .4s;
 .yellow i {
 vertical-align: middle;
 color: #ffff00;
+background: #79ff89;
 top: 9px;
 border-radius: 50%;
 font-size: 36px;
@@ -173,6 +177,7 @@ transition: .4s;
 .green i {
 vertical-align: middle;
 color: #008000;
+background: #79ff89;
 top: 9px;
 border-radius: 50%;
 font-size: 36px;
@@ -200,6 +205,7 @@ transition: .4s;
 .white i {
 vertical-align: middle;
 color: #ffffff;
+background: #79ff89;
 top: 9px;
 border-radius: 50%;
 font-size: 36px;
@@ -227,6 +233,7 @@ transition: .4s;
 .eraser i {
 vertical-align: middle;
 color: #707070;
+background: #79ff89;
 top: 9px;
 border-radius: 50%;
 font-size: 36px;
@@ -253,7 +260,8 @@ font-size: 36px;
 /* 戻るボタンの中身 */
 .clear i {
 vertical-align: middle;
-color: #707070;
+color: #6f00ff;
+background: #79ff89;
 top: 9px;
 border-radius: 50%;
 font-size: 36px;

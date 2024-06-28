@@ -242,11 +242,10 @@
       // 画像のURLをLINEに送信
       liff.sendMessages([
         {
-          type: "text",
-          text: imageUrl
-          /*
+          type: "image",
+          text: imageUrl,
           originalContentUrl: imageUrl,
-          previewImageUrl: imageUrl*/
+          previewImageUrl: imageUrl
         }
       ])
       .then(() => {

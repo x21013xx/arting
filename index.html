@@ -206,10 +206,11 @@
 
     //画像をLINEに送るための関数
     function uploadAndSendToLINE() {
+    /*
       if (!liff.isInClient()) {
         alert('このアプリはLINEアプリ内で使用してください。');
         return;
-      }
+      }*/
 
       var imageDataURL = canvas.toDataURL();
       var base64Image = imageDataURL.replace(/^data:image\/(png|jpg);base64,/, '');

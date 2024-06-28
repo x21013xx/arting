@@ -73,30 +73,31 @@
     <button class="button" onclick="uploadAndSendToLINE()">LINEに送信</button>
   </div>
 
+  <!-----------------------------------  JavaScript  ------------------------------------>
   <script>
-    window.onload = initializeLIFF;
+    window.onload = initializeLIFF; //関数を実行
 
-    function initializeLIFF() {
+    function initializeLIFF() { //LIFFの初期化を行う関数
       liff.init({
-        liffId: '2005613783-mB296jPd' // あなたのLIFFアプリのIDに置き換えてください
+        liffId: '2005613783-mB296jPd' //LIFFアプリのIDをここで入力
       })
       .then(() => {
-        console.log("LIFFの初期化に成功しました");
+        console.log("LIFFの初期化に成功しました"); //成功したなら
       })
       .catch((err) => {
-        console.error("LIFFの初期化に失敗しました", err);
+        console.error("LIFFの初期化に失敗しました", err); //失敗したなら
       });
     }
 
-    // canvas
+    // 絵を描くキャンバスの設定
     var canvas = document.getElementById('canvas');
     var ctx = canvas.getContext('2d');
 
-    // 変数宣言
-    const cnvWidth = 500;
-    const cnvHeight = 500;
-    var cnvColor = "0, 0, 0, 1";  // 線の色
-    var cnvBold = 5;  // 線の太さ
+    // キャンバスの初期設定
+    const cnvWidth = 500; //幅
+    const cnvHeight = 500; //高さ
+    var cnvColor = "0, 0, 0, 1";  // 初期の線の色（黒）
+    var cnvBold = 5;  // 初期の線の太さ
     var drawing = false; // 描画中フラグ
     var bgColor = "#ffffff"; //開いた時の最初の背景色（白）
 
@@ -186,6 +187,7 @@
       setBgColor();
     });
 
+    /*
     // canvasを画像で保存
     document.getElementById("download").onclick = (event) => {
       let canvas = document.getElementById("canvas");
@@ -194,69 +196,53 @@
       link.href = canvas.toDataURL("image/png");
       link.download = "canvas.png";
       link.click();
-    }
+    }*/
 
+    // 背景色を設定
     function setBgColor() {
       ctx.fillStyle = bgColor;
       ctx.fillRect(0, 0, cnvWidth, cnvHeight);
     }
 
+    //画像をLINEに送るための関数
     function uploadAndSendToLINE() {
-      // LIFFが初期化されているか確認
       if (!liff.isInClient()) {
         alert('このアプリはLINEアプリ内で使用してください。');
         return;
       }
 
-      // Canvasから画像データを取得
       var imageDataURL = canvas.toDataURL();
-      // 画像データをBase64に変換
       var base64Image = imageDataURL.replace(/^data:image\/(png|jpg);base64,/, '');
 
-      // 画像をImgBBにアップロード
-      fetch('https://api.imgbb.com/1/upload?key=6d5262ce3c660282adbde104fc74c228', {
-        method: 'POST',
-        body: new URLSearchParams({ image: base64Image }),
-        headers: {
-          'Content-Type': 'application/x-www-form-urlencoded'
-        }
-      })
-      .then(response => response.json())
-      .then(data => {
-        // アップロード成功時にLINEに送信
-        console.log('画像アップロード成功:', data);
-        sendImageMessage(data.data.url);
-      })
-      .catch(error => {
-        console.error('画像アップロードエラー', error);
-      });
-    }
-
-    function sendImageMessage(imageUrl) {
-      // 画像のURLをLINEに送信
-      liff.sendMessages([
-        {
-          type: 'image',
-          originalContentUrl: imageUrl,
-          previewImageUrl: imageUrl
-        }
-      ])
-      .then(() => {
-        console.log('画像がLINEに送信されました');
-        liff.closeWindow();
-      })
-      .catch((err) => {
-        console.error('画像送信エラー', err);
-      });
+      liff.getProfile()
+        .then(profile => {
+          return fetch('YOUR_WEBHOOK_URL', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+              userId: profile.userId,
+              image: base64Image
+            })
+          });
+        })
+        .then(response => response.json())
+        .then(data => {
+          console.log('画像が送信されました:', data);
+          liff.closeWindow();
+        })
+        .catch(error => console.error('画像送信エラー', error));
     }
 
     // id="file"のボタンを押したときに、
     // input type="file" id="fileinput" をクリックしたことと
     // 同じ動作にする設定
     // input type="file" id="fileinput"は、CSSで表示させないように設定
+    /*
     document.querySelector("#file").addEventListener("click", () => {
       document.querySelector("#fileinput").click();
-    });
+    });*/
 
     // デバイス（スマホやPC)から写真をcanvasに読み込む
     // 写真を、縦横比を維持し、

@@ -206,34 +206,54 @@
 
     //画像をLINEに送るための関数
     function uploadAndSendToLINE() {
-    /*
+      // LIFFが初期化されているか確認
+      /*
       if (!liff.isInClient()) {
         alert('このアプリはLINEアプリ内で使用してください。');
         return;
       }*/
 
-      var imageDataURL = canvas.toDataURL();
+      // キャンバスの画像をデータURL形式で取得
+      var imageDataURL = canvas.toDataURL(); 
+      // 画像データをBase64に変換（データURLから余計なものを取り除く）
       var base64Image = imageDataURL.replace(/^data:image\/(png|jpg);base64,/, '');
 
-      liff.getProfile()
-        .then(profile => {
-          return fetch('https://5a85-202-15-17-104.ngrok-free.app', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-              userId: profile.userId,
-              image: base64Image
-            })
-          });
-        })
-        .then(response => response.json())
-        .then(data => {
-          console.log('画像が送信されました:', data);
-          liff.closeWindow();
-        })
-        .catch(error => console.error('画像送信エラー', error));
+      // 画像をImgBBにアップロード (Imageパラメータとして送信)
+      fetch('https://api.imgbb.com/1/upload?key=6d5262ce3c660282adbde104fc74c228', {
+        method: 'POST',
+        body: new URLSearchParams({ image: base64Image }), 
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded'
+        }
+      })
+      .then(response => response.json()) //jsonでレスポンスを返す
+      .then(data => {
+        // アップロード成功なら
+        console.log('画像アップロード成功:', data);
+        sendImageMessage(data.data.url); //sendImageMessage関数にURLを送る
+      })
+      .catch(error => { //アップロード失敗なら
+        console.error('画像アップロードエラー', error);
+      });
+    }
+
+    //ImgBBにアップされた画像を取得する関数
+    function sendImageMessage(imageUrl) {
+      // 画像のURLをLINEに送信
+      liff.sendMessages([
+        {
+          type: 'image',
+          originalContentUrl: imageUrl,
+          previewImageUrl: imageUrl
+        }
+      ])
+      .then(() => {
+        console.log('画像がLINEに送信されました');
+        liff.closeWindow();
+      })
+      .catch((err) => {
+        console.error('画像送信エラー', err);
+      });
     }
 
     // id="file"のボタンを押したときに、

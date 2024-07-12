@@ -102,6 +102,7 @@
     var bgColor = "#ffffff"; //開いた時の最初の背景色（白）
 
     // canvasの背景色を設定(指定がない場合にjpeg保存すると背景が黒になる)
+    ctx.globalCompositeOperation = 'destination-out';
     setBgColor();
 
     // canvas上でのイベント
@@ -182,10 +183,11 @@
     });
 
     // 背景色を無しにする
+    /*
     $("#clearBgColor").click(function() {
       ctx.globalCompositeOperation = 'destination-out';
       setBgColor();
-    });
+    });*/
 
     /*
     // canvasを画像で保存

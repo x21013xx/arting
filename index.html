@@ -172,6 +172,7 @@
     // 描画クリア
     $("#clear").click(function () {
       ctx.clearRect(0, 0, cnvWidth, cnvHeight);
+      ctx.globalCompositeOperation = 'destination-out';
       setBgColor();
     });
 
@@ -262,10 +263,7 @@
     // input type="file" id="fileinput" をクリックしたことと
     // 同じ動作にする設定
     // input type="file" id="fileinput"は、CSSで表示させないように設定
-    /*
-    document.querySelector("#file").addEventListener("click", () => {
-      document.querySelector("#fileinput").click();
-    });*/
+
 
     // デバイス（スマホやPC)から写真をcanvasに読み込む
     // 写真を、縦横比を維持し、
